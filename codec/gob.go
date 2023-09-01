@@ -37,10 +37,13 @@ func NewGobCodec(conn io.ReadWriteCloser) Codec {
 //实现 ReadHeader、ReadBody、Write 和 Close 方法。实现了这些方法后GobCodec会成为Codec接口类型的子类
 
 func (c *GobCodec) ReadHeader(h *Header) error {
-	return c.dec.Decode(h)
+
+	log.Println("GOB ReadHeader")
+	return c.dec.Decode(h) // 通过ReadHeader 暴露 dec  *gob.Decoder 用于解码数据
 }
 
 func (c *GobCodec) ReadBody(body interface{}) error {
+	log.Println("GOB ReadBody")
 	return c.dec.Decode(body)
 }
 
