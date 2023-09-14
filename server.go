@@ -64,6 +64,8 @@ func (server *Server) Accept(lis net.Listener) {
 			log.Println("rpc server accept error", err)
 			return
 		}
+
+		log.Println("server accept ok 2")
 		go server.ServerConn(conn)
 	}
 }
@@ -89,10 +91,14 @@ func (server *Server) ServerConn(conn io.ReadWriteCloser) {
 
 	}
 	f := codec.NewCodecFuncMap[opt.CodecType]
+	log.Printf("(server *Server) ServerConn() f %v ", reflect.TypeOf(f))
+	log.Printf("(server *Server) ServerConn() f %v ", opt.CodecType)
+
 	if f == nil {
 		log.Println("rpc server :CodecType invalid ")
 		return
 	}
+	log.Printf("(server *Server) ServerConn(")
 	server.ServerCodec(f(conn))
 }
 
@@ -143,11 +149,15 @@ func (server *Server) readRequestHeader(cc codec.Codec) (*codec.Header, error) {
 }
 
 func (server *Server) readRequest(cc codec.Codec) (*request, error) {
+	log.Printf("111111111111111111111")
+	log.Printf("(server *Server) readReques in readRequest%v", cc)
 	h, err := server.readRequestHeader(cc) //返回请求头的指针
 	if err != nil {
 		return nil, err
 	}
 	req := &request{h: h} //结构体指针中 有请求头指针,
+
+	log.Printf("find service info  in readRequest%s:\n", h.ServiceMethod)
 	req.svc, req.mtype, err = server.findService(h.ServiceMethod)
 	if err != nil {
 		log.Printf("find service error in readRequest%s:\n", err)
@@ -275,8 +285,10 @@ func Register(rcvr interface{}) error { return DefaultServer.Register(rcvr) }
 func (server *Server) findService(serviceMethod string) (svc *service, mtype *methodType, err error) {
 	//为 ServiceMethod 的构成是 “Service.Method”，因此先将其分割成 2 部分，第一部分是 Service 的名称，
 	//第二部分即方法名。现在 serviceMap 中找到对应的 service 实例，再从 service 实例的 method 中，找到对应的 methodType。
+	serviceMethod = "Foo.Sum"
 	dot := strings.LastIndex(serviceMethod, ".")
-	fmt.Println("serviceMethod!!!!!", serviceMethod)
+
+	log.Println(" (server *Server) findService serviceMethod!!!!!", serviceMethod)
 	if dot < 0 {
 		err = errors.New("rpc server: service/method request ill-formed: " + serviceMethod)
 		return

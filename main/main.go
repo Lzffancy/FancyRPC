@@ -33,6 +33,7 @@ func startServer(addr chan string) {
 	log.Println("start rpc server on ", l.Addr())
 	addr <- l.Addr().String()
 	FancyRPC.Accept(l)
+	log.Println("server accept ok 1")
 }
 
 // 被调用的目标函数
@@ -118,7 +119,7 @@ func main() {
 			//args := fmt.Sprintf("rpc req %d", i)
 			args := &Args{Num1: i, Num2: i + i}
 			var reply int
-			if err := client.Call("Foo.Sum", args, &reply); err != nil {
+			if err := client.Call("Foo.Sum.", args, &reply); err != nil {
 				log.Printf("call Foo.Sum err %s  %d \n", err, 1)
 			} else {
 				log.Printf("%d + %d = %d", args.Num1, args.Num2, reply)

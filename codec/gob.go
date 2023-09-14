@@ -39,6 +39,7 @@ func NewGobCodec(conn io.ReadWriteCloser) Codec {
 func (c *GobCodec) ReadHeader(h *Header) error {
 
 	log.Println("GOB ReadHeader")
+	log.Printf("GOB ReadHeader is %v", h)
 	return c.dec.Decode(h) // 通过ReadHeader 暴露 dec  *gob.Decoder 用于解码数据
 }
 

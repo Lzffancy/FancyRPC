@@ -123,6 +123,7 @@ func (client *Client) receive() {
 			call.done()
 		}
 	}
+	log.Printf(" (client *Client) receive() ok !")
 	client.terminateCalls(err)
 }
 
@@ -153,6 +154,7 @@ func newClientCodec(cc codec.Codec, opt *Option) *Client {
 		pending: make(map[uint64]*Call),
 	}
 	go client.receive()
+	log.Printf("newClientCodec recevie !")
 	return client
 }
 
@@ -189,6 +191,7 @@ func Dial(network, address string, opts ...*Option) (client *Client, err error) 
 			_ = conn.Close()
 		}
 	}()
+	log.Printf("Dial: %v", opt)
 
 	return NewClient(conn, opt)
 }
@@ -223,6 +226,7 @@ func (client *Client) Go(serviceMethod string, args, reply interface{}, done cha
 
 	if done == nil {
 		done = make(chan *Call, 10)
+		log.Println("rpc client done channel is buffered")
 
 	} else if cap(done) == 0 {
 		log.Println("rpc client done channel is unbuffered")
@@ -241,6 +245,7 @@ func (client *Client) Go(serviceMethod string, args, reply interface{}, done cha
 
 // Call 暴露给客户但调用,同步接口
 func (client *Client) Call(serviceMethod string, args, reply interface{}) error {
+	log.Printf("client *Client) Call process")
 	call := <-client.Go(serviceMethod, args, reply, make(chan *Call, 1)).Done
 	return call.Error
 }
